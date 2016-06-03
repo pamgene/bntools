@@ -1,10 +1,16 @@
 Package: bntools
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1
+Title: BN utility tools
+Version: 0.2
 Date: 2016-06-03
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Alexandre Maurel
+Maintainer: Alexandre Maurel <alexandre.maurel@gmail.com>
+Description: Deploy BN app to PamStore
 License: What license is it under?
 LazyData: TRUE
+RoxygenNote: 5.0.1
+Imports:
+    R6,
+    XML,
+    httr,
+    utils

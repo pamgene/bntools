@@ -2,16 +2,6 @@ library(R6)
 library(XML)
 library(httr)
 
-# #' @export
-# shinyServerRun = function(){
-#
-# }
-
-# #' @export
-# dataFrameOperator = function(){
-#
-# }
-
 #' @export
 parseTags = function(str){
   list = unlist(strsplit(str, "[;]"))
@@ -25,21 +15,6 @@ parseTags = function(str){
 tagsToString = function(list){
   str = paste0('_',paste(list,collapse='_;_'), '_')
   return(str)
-}
-
-
-#' @export
-shinyServerShowResults = function(){
-
-}
-
-#' @export
-test = function(){
-  p = PamAppDefinition$new()
-  p$fromPackage()
-  xml = p$toXML()
-
-  print(xml)
 }
 
 
@@ -89,8 +64,6 @@ deployApp = function(packagePath = getwd(), username=NULL, pwd=NULL, baseUrl = '
   utils::zip(zipFilename, files)
   zz = file(zipFilename, "rb")
   bytes = readBin(zz, raw(), 8, size = 1)
-
-  # response = HEAD('https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps/Visualization/Shiny%20PCA%20V5.paf', authenticate('alex', 'norton73', type = "basic"))
 
   print(paste0('Uploading app at ' , url))
 

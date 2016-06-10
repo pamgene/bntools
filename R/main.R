@@ -20,9 +20,9 @@ tagsToString = function(list){
 
 #' @import R6 XML httr
 #' @export
-createApp = function(packagePath = getwd(), name = NULL, repository=NULL, repositoryType='bitbucket', tags=character(), mainCategory='pamapp'){
+createApp = function(packagePath = getwd(), repository=NULL, repositoryType='bitbucket', tags=character(), mainCategory='pamapp'){
   app = PamAppDefinition$new()
-  app$fromPackage(packagePath = packagePath, name = name, repository = repository, repositoryType = repositoryType)
+  app$fromPackage(packagePath = packagePath, repository = repository, repositoryType = repositoryType)
   app$tags = tags
   app$mainCategory = mainCategory
 
@@ -33,7 +33,7 @@ createApp = function(packagePath = getwd(), name = NULL, repository=NULL, reposi
 }
 
 #' @export
-deployApp = function(packagePath = getwd(), username=NULL, pwd=NULL, baseUrl = 'https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps' ) {
+deployApp = function(packagePath = getwd(), username=NULL, pwd=NULL, baseUrl = 'https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2' ) {
 
   app = PamAppDefinition$new()
   app$fromFolder(packagePath=packagePath)
@@ -59,29 +59,35 @@ deployApp = function(packagePath = getwd(), username=NULL, pwd=NULL, baseUrl = '
   image = paste0(packagePath, '/pamapp.png')
   if (!file.exists(image) ) stop('No image file, please provide an image file named pamapp.png in current directory')
 
-  files = c(paste0(packagePath, '/pamapp.padf'), image)
+  workingDir = getwd()
+
+  files = c('pamapp.padf', 'pamapp.png')
   zipFilename = tempfile(fileext = ".zip")
   utils::zip(zipFilename, files)
-  zz = file(zipFilename, "rb")
-  bytes = readBin(zz, raw(), 8, size = 1)
 
-  print(paste0('Uploading app at ' , url))
+  setwd(workingDir)
+
+  fileSize = file.info(zipFilename)$size
+  zz = file(zipFilename, "rb")
+  bytes = readBin(zz, raw(), n=fileSize, size = 1)
+
+  cat(paste0('Uploading app at ' , url))
 
   response = PUT(url, authenticate(username, pwd, type = "basic"), body = bytes)
   if (response$status != 201 ){
     stop(paste0("Failed to upload file to ", url , ", response$status " , response$status))
   }
 
-  print('Deployed successfully')
-  print('----------------------------------------')
-  print('WARNING')
-  print(paste0('Make sure to create a git tag ' , app$version))
-  print('git add -A')
-  print(paste0('git commit -m "' , app$version, '"'))
-  print(paste0('git tag -a ' , app$version, ' -m "++"'))
-  print('git push origin master')
-  print('git push origin --tags')
-  print('----------------------------------------')
+  cat('Deployed successfully\n')
+  cat('----------------------------------------\n')
+  cat('WARNING\n')
+  cat(paste0('Make sure to create a git tag ' , app$version, '\n'))
+  cat('git add -A && ')
+  cat(paste0('git commit -m "' , app$version, '" && '))
+  cat(paste0('git tag -a ' , app$version, ' -m "++" && '))
+  cat('git push origin master && ')
+  cat('git push origin --tags\n')
+  cat('----------------------------------------\n')
 
 }
 
@@ -99,13 +105,13 @@ PamAppDefinition = R6Class(
     description = NULL,
     mainCategory = NULL,
     tags = NULL,
+    capabilities = NULL,
 
     package = NULL,
     repository = NULL,
     repositoryType = NULL,
 
     initialize = function(){
-      self$webLink = 'https://pamcloud.pamgene.com/wiki/Wiki.jsp?page=PamApp%20default%20help%20page'
       self$mainCategory = 'pamapp'
       self$tags = character()
     },
@@ -136,6 +142,7 @@ PamAppDefinition = R6Class(
       self$description = xmlGetAttr(root, 'description')
       self$author = xmlGetAttr(root, 'author')
       self$date = xmlGetAttr(root, 'date')
+      self$capabilities = xmlGetAttr(root, 'capabilities')
 
       self$webLink = xmlGetAttr(root, 'webLink')
       self$mainCategory = xmlGetAttr(root, 'mainCategory')
@@ -151,7 +158,7 @@ PamAppDefinition = R6Class(
       self$repositoryType = xmlGetAttr(root, 'repositoryType')
     },
 
-    fromPackage = function(packagePath = getwd(), name = NULL, repository=NULL, repositoryType='bitbucket'){
+    fromPackage = function(packagePath = getwd(), repository=NULL, repositoryType='bitbucket'){
 
       filename = paste0(packagePath, "/DESCRIPTION")
       if (!file.exists(filename) ) stop('No DESCRIPTION file')
@@ -159,16 +166,18 @@ PamAppDefinition = R6Class(
       x <- read.dcf(file = filename)
 
       self$package = x[1,'Package']
-      if (is.null(name)){
-        self$name = self$package
-      } else {
-        self$name = name
-      }
+      self$name = x[1,'Title']
 
       self$version = x[1,'Version']
       self$description = x[1,'Description']
       self$author = x[1,'Author']
       self$date = x[1,'Date']
+
+      if ('URL' %in% colnames(x)){
+        self$webLink = x[1,'URL']
+      } else {
+        self$webLink = 'https://pamcloud.pamgene.com/wiki/Wiki.jsp?page=PamApp%20default%20help%20page'
+      }
 
       if (is.null(repository)){
         self$repository = paste0('bnoperator/', self$package)
@@ -183,14 +192,37 @@ PamAppDefinition = R6Class(
       hasShinyServerRun = exists( "shinyServerRun" , envir = packageEnv )
       hasDataFrameOperator = exists( "dataFrameOperator" , envir = packageEnv )
       hasShinyServerShowResults = exists( "shinyServerShowResults" , envir = packageEnv )
+      hasOperatorProperties = exists( "operatorProperties" , envir = packageEnv )
+      hasCurveFitOperatorFunction = exists( "curveFitOperatorFunction" , envir = packageEnv )
 
       if (hasShinyServerRun || hasDataFrameOperator){
-        self$type = 'RDataStepOperator'
+        if (hasOperatorProperties){
+          self$type = 'RDataStepOperator'
+        } else {
+          stop('Function operatorProperties is missing')
+        }
       } else if (hasShinyServerShowResults) {
         self$type = 'RDataScript'
       } else {
-        stop('Package does not export bn app functions')
+        stop('Package does not export any bn app functions : shinyServerRun | dataFrameOperator | shinyServerShowResults')
       }
+
+      cap = list()
+      if (hasShinyServerRun){
+        cap$shinyServerRun = 'shinyServerRun'
+
+      }
+      if (hasDataFrameOperator){
+        cap$dataFrameOperator = 'dataFrameOperator'
+       }
+      if (hasShinyServerShowResults){
+        cap$shinyServerShowResults = 'shinyServerShowResults'
+       }
+      if (hasCurveFitOperatorFunction){
+        cap$curveFitOperatorFunction = 'curveFitOperatorFunction'
+       }
+
+      self$capabilities = paste(cap,collapse=';' )
     },
 
     toXML = function(){
@@ -202,6 +234,8 @@ PamAppDefinition = R6Class(
       addAttributes(doc, "author"=self$author)
       addAttributes(doc, "description"=self$description)
       addAttributes(doc, "date"=self$date)
+
+      addAttributes(doc, "capabilities"=self$capabilities)
 
       addAttributes(doc, "package"=self$package)
       addAttributes(doc, "repository"=self$repository)

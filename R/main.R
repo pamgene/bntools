@@ -207,7 +207,7 @@ PamAppDefinition = R6Class(
         if (hasOperatorProperties){
           self$type = 'RDataStepOperator'
         } else {
-          stop('Function operatorProperties is missing')
+          stop('Function operatorProperties is required')
         }
       } else if (hasShinyServerShowResults) {
         self$type = 'RDataScript'

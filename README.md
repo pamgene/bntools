@@ -6,7 +6,9 @@
 use the same name as the app ex. myapp
 
 Team : bnoperator
+
 Project : bn_shiny_app
+
 Repository name : myapp
 
 - create R package with RStudio
@@ -20,10 +22,13 @@ git remote add origin https://username@bitbucket.org/bnoperator/myapp.git
 Build > Configure Build Tools
 
 check generate documentation with Roxygen
+
 then
+
 check Roxygen options > Build & Reload
 
 see [Roxygen2](https://cran.r-project.org/web/packages/roxygen2/vignettes/roxygen2.html)
+
 see [Roxygen2 managing your NAMESPACE](https://cran.r-project.org/web/packages/roxygen2/vignettes/namespace.html)
 
 ```

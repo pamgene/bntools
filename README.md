@@ -11,13 +11,13 @@ Project : bn_shiny_app
 
 Repository name : myapp
 
-- create R package with RStudio
+## Create R package with RStudio
 
 use the same name as the app ex. myapp
 
 git remote add origin https://username@bitbucket.org/bnoperator/myapp.git
 
-- RStudio config
+## RStudio config
 
 Build > Configure Build Tools
 
@@ -38,13 +38,17 @@ see [Roxygen2 managing your NAMESPACE](https://cran.r-project.org/web/packages/r
     ...
  }
 ```
+## Package DESCRIPTION
 
 - set package Title, it will be the app name once deployed
 - set package Date
 - set package Description
 - set package URL, help url
 - set package Version
-- app icon : place an image file named pamapp.png at the project root
+
+## Icon
+
+Place an image file named pamapp.png at the project root
 
 # Operator
 

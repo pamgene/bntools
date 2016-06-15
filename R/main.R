@@ -33,7 +33,15 @@ createApp = function(packagePath = getwd(), repository=NULL, repositoryType='bit
 }
 
 #' @export
-deployApp = function(packagePath = getwd(), username=NULL, pwd=NULL, baseUrl = 'https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2' ) {
+deployApp = function(packagePath = getwd(), username=getOption("pamcloud.username"), password=getOption("pamcloud.password"), baseUrl = 'https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2' ) {
+
+  if (is.null(username)){
+    stop('username is required')
+  }
+
+  if (is.null(password)){
+    stop('password is required')
+  }
 
   app = PamAppDefinition$new()
   app$fromFolder(packagePath=packagePath)
@@ -51,7 +59,7 @@ deployApp = function(packagePath = getwd(), username=NULL, pwd=NULL, baseUrl = '
 
   url = paste0(baseUrl, '/', app$mainCategory, '/', app$package, '_' , app$version, '.paf')
 
-  response = HEAD(url, authenticate(username, pwd, type = "basic"))
+  response = HEAD(url, authenticate(username, password, type = "basic"))
   if (response$status_code != 404 || response$status_code == 200){
     stop(paste0("File ", url , " already exists, please increase the package version number. status ", response$status))
   }
@@ -73,7 +81,7 @@ deployApp = function(packagePath = getwd(), username=NULL, pwd=NULL, baseUrl = '
 
   cat(paste0('Uploading app at ' , url))
 
-  response = PUT(url, authenticate(username, pwd, type = "basic"), body = bytes)
+  response = PUT(url, authenticate(username, password, type = "basic"), body = bytes)
   if (response$status != 201 ){
     stop(paste0("Failed to upload file to ", url , ", response$status " , response$status))
   }

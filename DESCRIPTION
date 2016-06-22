@@ -1,7 +1,7 @@
 Package: bntools
 Type: Package
 Title: BN utility tools
-Version: 1.1
+Version: 1.2
 Date: 2016-06-03
 Author: Alexandre Maurel
 Maintainer: Alexandre Maurel <alexandre.maurel@gmail.com>
@@ -10,6 +10,7 @@ License: What license is it under?
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Imports:
+    bnshiny,
     R6,
     XML,
     httr,

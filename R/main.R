@@ -63,7 +63,7 @@ deployApp = function(packagePath = getwd(), username=getOption("pamcloud.usernam
   zz = file(zipFilename, "rb")
   bytes = readBin(zz, raw(), n=fileSize, size = 1)
 
-  cat(paste0('Uploading app at ' , url))
+  cat(paste0('Uploading app at ' , url,'\n'))
 
   response = PUT(url, authenticate(username, password, type = "basic"), body = bytes)
   if (response$status != 201 ){

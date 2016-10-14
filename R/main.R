@@ -1,5 +1,5 @@
 
-
+#' @import bnutil
 #' @import R6
 #' @import XML
 #' @import httr
@@ -9,7 +9,7 @@ createApp = function(packagePath = getwd(),
                      repositoryType='bitbucket',
                      tags=character(),
                      mainCategory='pamapp'){
-  app = bnshiny::PamAppDefinition$new()
+  app = bnutil::PamAppDefinition$new()
   app$fromPackage(packagePath = packagePath, repository = repository, repositoryType = repositoryType)
   app$tags = tags
   app$mainCategory = mainCategory
@@ -20,7 +20,6 @@ createApp = function(packagePath = getwd(),
   return(app)
 }
 
-#' @export
 deployApp = function(packagePath = getwd(),
                      username=getOption("pamcloud.username"),
                      password=getOption("pamcloud.password"),
@@ -36,7 +35,7 @@ deployApp = function(packagePath = getwd(),
     stop('password is required')
   }
 
-  app = bnshiny::PamAppDefinition$new()
+  app = bnutil::PamAppDefinition$new()
   app$fromFolder(packagePath=packagePath)
 
   x <- read.dcf(file = paste0(packagePath, "/DESCRIPTION"))

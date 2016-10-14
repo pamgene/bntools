@@ -144,27 +144,24 @@ net use x: \\w2kstrg01\Backups\postgres\PGCRAN /P:Yes
 # Deploy an app using git
 
 ```
-bntools::createApp(tags=c('test','test2'), mainCategory = 'test')
-bntools::deployGitApp(username = 'me', password='mypassword')
+bntools::createApp(tags=c('Visualization Components'), mainCategory = 'Visualization')
 
 ```
 
 Push a new verion to git origin, and set a new tag
 
 ```
-git tag -a 1.20 -m "some comment"
-git push origin master
-git push origin --tags
+git add -A && git commit -m "++" && git push && git tag -a 1.22 -m "test" && git push --tags
+```
+
+Deploy the package on Pamgene CRAN and the app in Pamgene App Store
 
 ```
-Deploy an app on pamgene app store, the package will also be published to pamgene R repository
-
+bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1.22')
 ```
-bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1.21')
-```
+ 
 
 # Publish a package on pamagene R repository
-
 
 
 ```

@@ -1,3 +1,4 @@
+library(bnutil)
 
 #' @import bnutil
 #' @import R6
@@ -9,7 +10,7 @@ createApp = function(packagePath = getwd(),
                      repositoryType='bitbucket',
                      tags=character(),
                      mainCategory='pamapp'){
-  app = bnutil::PamAppDefinition$new()
+  app = PamAppDefinition$new()
   app$fromPackage(packagePath = packagePath, repository = repository, repositoryType = repositoryType)
   app$tags = tags
   app$mainCategory = mainCategory
@@ -17,6 +18,18 @@ createApp = function(packagePath = getwd(),
   xml = app$toXML()
   file = paste0(packagePath, '/pamapp.padf')
   write(xml, file = file)
+
+  cat('App created\n')
+  cat('----------------------------------------\n')
+  cat('WARNING\n')
+  cat(paste0('Make sure to create a git tag ' , app$version, '\n'))
+  cat('git add -A && ')
+  cat(paste0('git commit -m "' , app$version, '" && '))
+  cat(paste0('git tag -a ' , app$version, ' -m "++" && '))
+  cat('git push origin master && ')
+  cat('git push origin --tags\n')
+  cat('----------------------------------------\n')
+
   return(app)
 }
 
@@ -35,7 +48,7 @@ deployApp = function(packagePath = getwd(),
     stop('password is required')
   }
 
-  app = bnutil::PamAppDefinition$new()
+  app = PamAppDefinition$new()
   app$fromFolder(packagePath=packagePath)
 
   x <- read.dcf(file = paste0(packagePath, "/DESCRIPTION"))
@@ -78,16 +91,16 @@ deployApp = function(packagePath = getwd(),
     stop(paste0("Failed to upload file to ", url , ", response$status " , response$status))
   }
 
-#   cat('Deployed successfully\n')
-#   cat('----------------------------------------\n')
-#   cat('WARNING\n')
-#   cat(paste0('Make sure to create a git tag ' , app$version, '\n'))
-#   cat('git add -A && ')
-#   cat(paste0('git commit -m "' , app$version, '" && '))
-#   cat(paste0('git tag -a ' , app$version, ' -m "++" && '))
-#   cat('git push origin master && ')
-#   cat('git push origin --tags\n')
-#   cat('----------------------------------------\n')
+  #   cat('Deployed successfully\n')
+  #   cat('----------------------------------------\n')
+  #   cat('WARNING\n')
+  #   cat(paste0('Make sure to create a git tag ' , app$version, '\n'))
+  #   cat('git add -A && ')
+  #   cat(paste0('git commit -m "' , app$version, '" && '))
+  #   cat(paste0('git tag -a ' , app$version, ' -m "++" && '))
+  #   cat('git push origin master && ')
+  #   cat('git push origin --tags\n')
+  #   cat('----------------------------------------\n')
 
 }
 
@@ -149,10 +162,10 @@ deployGitPackage = function(git,
 
 #' @export
 deployGitApp = function(git, ref=NULL,
-                     username=getOption("pamcloud.username"),
-                     password=getOption("pamcloud.password"),
-                     baseUrl = getOption("pamcloud.pamapp.url", default='https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2'),
-                     repoFolder = getOption("pamcloud.pgcran.folder", default='x:/')){
+                        username=getOption("pamcloud.username"),
+                        password=getOption("pamcloud.password"),
+                        baseUrl = getOption("pamcloud.pamapp.url", default='https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2'),
+                        repoFolder = getOption("pamcloud.pgcran.folder", default='x:/')){
 
   if (is.null(ref)){
     stop('deployGitPackage : git ref is null')

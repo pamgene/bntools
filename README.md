@@ -160,7 +160,7 @@ git push origin --tags
 Deploy an app on pamgene app store, the package will also be published to pamgene R repository
 
 ```
-bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1.21)
+bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1.21')
 ```
 
 # Publish a package on pamagene R repository

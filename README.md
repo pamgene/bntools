@@ -150,7 +150,17 @@ bntools::deployApp()
 ## Git tag version
 
 
+```
+options(download.file.method = "curl")
 
 
+bntools::deployGitPackage('https://amaurel@bitbucket.org/bnoperator/cubeinfodensity.git', '1.20')
+library(git2r)
 
+devtools:::remote_download.git_remote(list(url='https://amaurel@bitbucket.org/bnoperator/cubeinfodensity.git', branch='1.20'))
+
+tmp = tempfile()
+repo = git2r::clone('https://bitbucket.org/bnoperator/cubeinfodensity.git', tmp)
+
+```
 

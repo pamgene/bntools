@@ -4,7 +4,11 @@
 #' @import XML
 #' @import httr
 #' @export
-createApp = function(packagePath = getwd(), repository=NULL, repositoryType='bitbucket', tags=character(), mainCategory='pamapp'){
+createApp = function(packagePath = getwd(),
+                     repository=NULL,
+                     repositoryType='bitbucket',
+                     tags=character(),
+                     mainCategory='pamapp'){
   app = bnshiny::PamAppDefinition$new()
   app$fromPackage(packagePath = packagePath, repository = repository, repositoryType = repositoryType)
   app$tags = tags
@@ -17,7 +21,12 @@ createApp = function(packagePath = getwd(), repository=NULL, repositoryType='bit
 }
 
 #' @export
-deployApp = function(packagePath = getwd(), username=getOption("pamcloud.username"), password=getOption("pamcloud.password"), baseUrl = 'https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2' ) {
+deployApp = function(packagePath = getwd(),
+                     username=getOption("pamcloud.username"),
+                     password=getOption("pamcloud.password"),
+                     baseUrl = getOption("pamcloud.pamapp.url",
+                                         default='https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2') ) {
+
 
   if (is.null(username)){
     stop('username is required')
@@ -83,6 +92,96 @@ deployApp = function(packagePath = getwd(), username=getOption("pamcloud.usernam
 
 }
 
+#' @import devtools
+#' @export
+deployPackage = function(packagePath = getwd(),
+                         repoFolder = getOption("pamcloud.pgcran.folder", default='E:/mnt/pamgene/PGCRAN')){
+
+
+  oldwd = getwd()
+  setwd(packagePath)
+  on.exit(setwd(oldwd))
+
+  # build source
+  sourceFile = devtools::build()
+  # build binary
+  binaryFile = devtools::build(binary=TRUE)
+
+  drat::insertPackage(sourceFile, repoFolder)
+  drat::insertPackage(binaryFile, repoFolder)
+
+}
+
+#' @import git2r
+#' @import devtools
+#' @export
+deployGitPackage = function(git,
+                            ref=NULL,
+                            repoFolder = getOption("pamcloud.pgcran.folder", default='E:/mnt/pamgene/PGCRAN')){
+
+  if (is.null(ref)){
+    stop('deployGitPackage : git ref is null')
+  }
+
+  tmp = tempfile()
+  dir.create(tmp)
+
+  oldwd = getwd()
+  setwd(tmp)
+  on.exit(setwd(oldwd))
+
+  # git clone
+  cmd = sprintf(paste("git clone %s"), git)
+  code = system(cmd)
+  if (code != 0) stop('git clone as failed')
+
+  # get git repo dir
+  dir = list.dirs(tmp, recursive = FALSE)
+
+  setwd(dir)
+
+  # git checkout branch or tag or commit
+  cmd = sprintf(paste("git checkout %s"), ref)
+  code = system(cmd)
+  if (code != 0) stop('git checkout as failed')
+
+
+
+
+  deployPackage(repoFolder=repoFolder)
+
+  unlink(tmp, recursive = TRUE)
+}
+
+#' @import git2r
+#' @export
+deployGitApp = function(git, tag=NULL,
+                     username=getOption("pamcloud.username"),
+                     password=getOption("pamcloud.password"),
+                     baseUrl = getOption("pamcloud.pamapp.url", default='https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2'),
+                     repoFolder = getOption("pamcloud.pgcran.folder", default='E:/mnt/pamgene/PGCRAN')){
+
+  tmp =tempdir()
+  oldwd = getwd()
+  setwd(tmp)
+  on.exit(setwd(oldwd))
+
+  repo <- git2r::clone(git, tmp)
+
+  if (!is.null(tag)){
+    git2r::checkout(repo, tag)
+  } else {
+    stop('deployGitApp : git tag is null')
+  }
+
+  setwd(git2r::workdir(repo))
+
+  deployPackage(repoFolder=repoFolder)
+  deployApp(username=username, password=password, baseUrl=baseUrl)
+
+  unlink(tmp, recursive = TRUE)
+
+}
 
 
 

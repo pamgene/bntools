@@ -2,6 +2,11 @@
 
 export(createApp)
 export(deployApp)
+export(deployGitApp)
+export(deployGitPackage)
+export(deployPackage)
 import(R6)
 import(XML)
+import(devtools)
+import(git2r)
 import(httr)

@@ -79,23 +79,23 @@ deployApp = function(packagePath = getwd(),
     stop(paste0("Failed to upload file to ", url , ", response$status " , response$status))
   }
 
-  cat('Deployed successfully\n')
-  cat('----------------------------------------\n')
-  cat('WARNING\n')
-  cat(paste0('Make sure to create a git tag ' , app$version, '\n'))
-  cat('git add -A && ')
-  cat(paste0('git commit -m "' , app$version, '" && '))
-  cat(paste0('git tag -a ' , app$version, ' -m "++" && '))
-  cat('git push origin master && ')
-  cat('git push origin --tags\n')
-  cat('----------------------------------------\n')
+#   cat('Deployed successfully\n')
+#   cat('----------------------------------------\n')
+#   cat('WARNING\n')
+#   cat(paste0('Make sure to create a git tag ' , app$version, '\n'))
+#   cat('git add -A && ')
+#   cat(paste0('git commit -m "' , app$version, '" && '))
+#   cat(paste0('git tag -a ' , app$version, ' -m "++" && '))
+#   cat('git push origin master && ')
+#   cat('git push origin --tags\n')
+#   cat('----------------------------------------\n')
 
 }
 
 #' @import devtools
 #' @export
 deployPackage = function(packagePath = getwd(),
-                         repoFolder = getOption("pamcloud.pgcran.folder", default='E:/mnt/pamgene/PGCRAN')){
+                         repoFolder = getOption("pamcloud.pgcran.folder", default='x:/')){
 
 
   oldwd = getwd()
@@ -112,12 +112,11 @@ deployPackage = function(packagePath = getwd(),
 
 }
 
-#' @import git2r
 #' @import devtools
 #' @export
 deployGitPackage = function(git,
                             ref=NULL,
-                            repoFolder = getOption("pamcloud.pgcran.folder", default='E:/mnt/pamgene/PGCRAN')){
+                            repoFolder = getOption("pamcloud.pgcran.folder", default='x:/')){
 
   if (is.null(ref)){
     stop('deployGitPackage : git ref is null')
@@ -145,36 +144,43 @@ deployGitPackage = function(git,
   code = system(cmd)
   if (code != 0) stop('git checkout as failed')
 
-
-
-
   deployPackage(repoFolder=repoFolder)
 
   unlink(tmp, recursive = TRUE)
 }
 
-#' @import git2r
 #' @export
-deployGitApp = function(git, tag=NULL,
+deployGitApp = function(git, ref=NULL,
                      username=getOption("pamcloud.username"),
                      password=getOption("pamcloud.password"),
                      baseUrl = getOption("pamcloud.pamapp.url", default='https://pamcloud.pamgene.com/jackrabbit/repository/default/PamApps2'),
-                     repoFolder = getOption("pamcloud.pgcran.folder", default='E:/mnt/pamgene/PGCRAN')){
+                     repoFolder = getOption("pamcloud.pgcran.folder", default='x:/')){
 
-  tmp =tempdir()
+  if (is.null(ref)){
+    stop('deployGitPackage : git ref is null')
+  }
+
+  tmp = tempfile()
+  dir.create(tmp)
+
   oldwd = getwd()
   setwd(tmp)
   on.exit(setwd(oldwd))
 
-  repo <- git2r::clone(git, tmp)
+  # git clone
+  cmd = sprintf(paste("git clone %s"), git)
+  code = system(cmd)
+  if (code != 0) stop('git clone as failed')
 
-  if (!is.null(tag)){
-    git2r::checkout(repo, tag)
-  } else {
-    stop('deployGitApp : git tag is null')
-  }
+  # get git repo dir
+  dir = list.dirs(tmp, recursive = FALSE)
 
-  setwd(git2r::workdir(repo))
+  setwd(dir)
+
+  # git checkout branch or tag or commit
+  cmd = sprintf(paste("git checkout %s"), ref)
+  code = system(cmd)
+  if (code != 0) stop('git checkout as failed')
 
   deployPackage(repoFolder=repoFolder)
   deployApp(username=username, password=password, baseUrl=baseUrl)

@@ -122,15 +122,7 @@ shinyServerShowResults = function(input, output, session, context) {
   ...
 }
 ```
-
-# Deploy
-
-```
-bntools::createApp(tags=c('test','test2'), mainCategory = 'test')
-bntools::deployApp(username = 'me', password='mypassword')
-
-```
-
+ 
 ## Storing username and password in .Rprofile
 
 save the following in .Rprofile file
@@ -140,27 +132,41 @@ options("pamcloud.username"="myusername")
 options("pamcloud.password"="mypassword")
 
 ```
+ 
+## Creating windows share drive to PGCRAN folder
+
+Location of pamagene R packages
+
+```
+net use x: \\w2kstrg01\Backups\postgres\PGCRAN /P:Yes
+``` 
+
+# Deploy an app using git
 
 ```
 bntools::createApp(tags=c('test','test2'), mainCategory = 'test')
-bntools::deployApp()
+bntools::deployGitApp(username = 'me', password='mypassword')
 
 ```
 
-## Git tag version
+Push a new verion to git origin, and set a new tag
+
+```
+git tag -a 1.20 -m "some comment"
+git push origin master
+git push origin --tags
+
+```
+Deploy an app on pamgene app store, the package will also be publish to pamgene R repository
+
+```
+bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git')
+```
+
+# Publish a package on pamagene R repository
+
 
 
 ```
-options(download.file.method = "curl")
-
-
-bntools::deployGitPackage('https://amaurel@bitbucket.org/bnoperator/cubeinfodensity.git', '1.20')
-library(git2r)
-
-devtools:::remote_download.git_remote(list(url='https://amaurel@bitbucket.org/bnoperator/cubeinfodensity.git', branch='1.20'))
-
-tmp = tempfile()
-repo = git2r::clone('https://bitbucket.org/bnoperator/cubeinfodensity.git', tmp)
-
+bntools::deployGitPackage('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1.20')
 ```
-

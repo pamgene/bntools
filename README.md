@@ -157,7 +157,7 @@ git push origin master
 git push origin --tags
 
 ```
-Deploy an app on pamgene app store, the package will also be publish to pamgene R repository
+Deploy an app on pamgene app store, the package will also be published to pamgene R repository
 
 ```
 bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git')
@@ -168,5 +168,5 @@ bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git')
 
 
 ```
-bntools::deployGitPackage('https://bitbucket.org/bnoperator/bntools.git', '1.6')
+bntools::deployGitPackage('https://bitbucket.org/bnoperator/bntools.git', '1.7')
 ```

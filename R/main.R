@@ -92,7 +92,6 @@ deployApp = function(packagePath = getwd(),
 }
 
 #' @import devtools
-#' @export
 deployPackage = function(packagePath = getwd(),
                          repoFolder = getOption("pamcloud.pgcran.folder", default='x:/')){
 

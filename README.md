@@ -165,5 +165,5 @@ bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1
 
 
 ```
-bntools::deployGitPackage('https://bitbucket.org/bnoperator/bntools.git', '1.7')
+bntools::deployGitPackage('https://bitbucket.org/bnoperator/bntools.git', '1.10')
 ```

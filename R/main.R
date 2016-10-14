@@ -1,5 +1,5 @@
 
-
+#' @import bnutil
 #' @import R6
 #' @import XML
 #' @import httr
@@ -9,7 +9,7 @@ createApp = function(packagePath = getwd(),
                      repositoryType='bitbucket',
                      tags=character(),
                      mainCategory='pamapp'){
-  app = bnshiny::PamAppDefinition$new()
+  app = bnutil::PamAppDefinition$new()
   app$fromPackage(packagePath = packagePath, repository = repository, repositoryType = repositoryType)
   app$tags = tags
   app$mainCategory = mainCategory
@@ -36,7 +36,7 @@ deployApp = function(packagePath = getwd(),
     stop('password is required')
   }
 
-  app = bnshiny::PamAppDefinition$new()
+  app = bnutil::PamAppDefinition$new()
   app$fromFolder(packagePath=packagePath)
 
   x <- read.dcf(file = paste0(packagePath, "/DESCRIPTION"))

@@ -1,5 +1,7 @@
 library(bnutil)
+library(drat)
 
+#' @import drat
 #' @import bnutil
 #' @import R6
 #' @import XML

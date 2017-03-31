@@ -157,8 +157,7 @@ Deploy the package on Pamgene CRAN and the app in Pamgene App Store
 ```
 bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1.22')
 ```
- 
-
+  
 # Publish a package on pamagene R repository
 
 

@@ -137,9 +137,7 @@ options("pamcloud.password"="mypassword")
 
 Location of pamagene R packages
 
-```
-net use x: \\w2kstrg01\Backups\postgres\PGCRAN /P:Yes
-``` 
+See pgcran package info
 
 # Deploy an app using git
 

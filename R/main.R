@@ -13,7 +13,9 @@ createApp = function(packagePath = getwd(),
                      tags=character(),
                      mainCategory='pamapp'){
   app = PamAppDefinition$new()
-  app$fromPackage(packagePath = packagePath, repository = repository, repositoryType = repositoryType)
+  app$fromPackage(packagePath = packagePath,
+                  repository = repository,
+                  repositoryType = repositoryType)
   app$tags = tags
   app$mainCategory = mainCategory
 

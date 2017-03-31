@@ -151,7 +151,7 @@ bntools::createApp(tags=c('Visualization Components'), mainCategory = 'Visualiza
 Push a new verion to git origin, and set a new tag
 
 ```
-git add -A && git commit -m "++" && git push && git tag -a 1.22 -m "test" && git push --tags
+git add -A && git commit -m "add support for Capabilities in package description" && git push && git tag -a 1.12 -m "add support for Capabilities in package description" && git push --tags
 ```
 
 Deploy the package on Pamgene CRAN and the app in Pamgene App Store
@@ -165,5 +165,5 @@ bntools::deployGitApp('https://bitbucket.org/bnoperator/cubeinfodensity.git', '1
 
 
 ```
-bntools::deployGitPackage('https://bitbucket.org/bnoperator/bntools.git', '1.10')
+bntools::deployGitPackage('https://bitbucket.org/bnoperator/bntools.git', '1.12')
 ```
